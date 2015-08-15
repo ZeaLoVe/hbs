@@ -1,6 +1,7 @@
 package http
 
 import (
+	"encoding/json"
 	"github.com/open-falcon/hbs/cache"
 	"github.com/open-falcon/hbs/db"
 	"net/http"
@@ -37,7 +38,7 @@ func configProcRoutes() {
 			return
 		}
 
-		for i, _ := range body {
+		for i, _ := range body.Items {
 			if body.Items[i].Ip == "" {
 				continue
 			}
