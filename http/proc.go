@@ -27,8 +27,23 @@ func configProcRoutes() {
 	})
 
 	http.HandleFunc("/endpoints", func(w http.ResponseWriter, r *http.Request) {
-		var res ResponseEndpoints
-		RenderJson(w, res)
+		//body also response
+		var body ResponseEndpoints
+		decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(&body)
+
+		if err != nil {
+			RenderMsgJson(w, "Not param, may be with wrong format")
+			return
+		}
+
+		for i, _ := range body {
+			if body.Items[i].Ip == "" {
+				continue
+			}
+			body.Items[i].Endpoint, _ = db.QueryEndpoint(body.Items[i].Ip)
+		}
+		RenderJson(w, body)
 	})
 
 }
