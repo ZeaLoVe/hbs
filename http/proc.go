@@ -22,6 +22,10 @@ func configProcRoutes() {
 		var res ResponseEndpoints
 		var host ResponseHost
 		host.Ip = r.FormValue("ip")
+		if host.Ip == "" {
+			RenderMsgJson(w, "Not param")
+			return
+		}
 		host.Endpoint, _ = db.QueryEndpoint(host.Ip)
 		res.Items = append(res.Items, host)
 		RenderJson(w, res)
