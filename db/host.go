@@ -62,7 +62,7 @@ func QueryMonitoredHosts() (map[int]*model.Host, error) {
 
 //Get endpoint by ip
 func QueryEndpoint(ip string) (string, error) {
-	sql := fmt.Sprintf("select hostname from host where ip = %v order by update_at DESC", ip)
+	sql := fmt.Sprintf("select hostname from host where ip = '%v' order by update_at DESC", ip)
 	rows, err := DB.Query(sql)
 	if err != nil {
 		log.Println("ERROR:", err)
