@@ -12,6 +12,12 @@ type HttpConfig struct {
 	Listen  string `json:"listen"`
 }
 
+//add exchange map
+type NAT struct {
+	PublicIP  string `json:"publicip"`
+	PrivateIP string `json:"privateip"`
+}
+
 type GlobalConfig struct {
 	Debug     bool        `json:"debug"`
 	Hosts     string      `json:"hosts"`
@@ -20,6 +26,8 @@ type GlobalConfig struct {
 	Listen    string      `json:"listen"`
 	Trustable []string    `json:"trustable"`
 	Http      *HttpConfig `json:"http"`
+
+	Nat []NAT `json:"nat"`
 }
 
 var (

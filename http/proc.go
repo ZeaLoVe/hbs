@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/open-falcon/hbs/cache"
 	"github.com/open-falcon/hbs/db"
+	"github.com/open-falcon/hbs/g"
 	"net/http"
 )
 
@@ -26,7 +27,12 @@ func configProcRoutes() {
 			RenderMsgJson(w, "Not param")
 			return
 		}
-		host.Endpoint, _ = db.QueryEndpoint(host.Ip)
+		target_ip := host.Ip
+		if !isPrivateIP(target_ip) {
+			//转化成内网IP
+			target_ip = PrivateIP(host.Ip, g.Config().Nat)
+		}
+		host.Endpoint, _ = db.QueryEndpoint(target_ip)
 		res.Items = append(res.Items, host)
 		RenderJson(w, res)
 	})
@@ -46,7 +52,12 @@ func configProcRoutes() {
 			if body.Items[i].Ip == "" {
 				continue
 			}
-			body.Items[i].Endpoint, _ = db.QueryEndpoint(body.Items[i].Ip)
+			target_ip := body.Items[i].Ip
+			if !isPrivateIP(target_ip) {
+				//转化成内网IP
+				target_ip = PrivateIP(body.Items[i].Ip, g.Config().Nat)
+			}
+			body.Items[i].Endpoint, _ = db.QueryEndpoint(target_ip)
 		}
 		RenderJson(w, body)
 	})
