@@ -11,8 +11,9 @@ import (
 // 1.0.9: update host table anyway
 // 1.1.0: remove Checksum when query plugins
 // 1.1.0.sdpv001 add api to get endpoint by ip
+// 1.1.0.sdpv002 add function to get endpoint by both public ip and private ip
 const (
-	VERSION = "1.1.0.sdpv001"
+	VERSION = "1.1.0.sdpv002"
 )
 
 func init() {
