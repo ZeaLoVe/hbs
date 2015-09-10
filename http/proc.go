@@ -62,6 +62,24 @@ func configProcRoutes() {
 		RenderJson(w, body)
 	})
 
+	//get ,API of all endpoints ,use in agent alive check.
+	http.HandleFunc("/all/endpoints", func(w http.ResponseWriter, r *http.Request) {
+		var endpoints []Endpoint
+		var endpoint Endpoint
+		cache.HostMap.Lock()
+		for host, _ := range cache.HostMap.M {
+			endpoint.Endpoint = host
+			endpoints = append(endpoints, endpoint)
+		}
+		cache.HostMap.Unlock()
+
+		RenderJson(w, endpoints)
+	})
+
+}
+
+type Endpoint struct {
+	Endpoint string `json:"endpoint,omitempty"`
 }
 
 type ResponseHost struct {
