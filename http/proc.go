@@ -62,18 +62,20 @@ func configProcRoutes() {
 		RenderJson(w, body)
 	})
 
-	//get ,API of all endpoints ,use in agent alive check.
-	http.HandleFunc("/all/endpoints", func(w http.ResponseWriter, r *http.Request) {
-		var endpoints []Endpoint
-		var endpoint Endpoint
+	//get ,API of all hosts, use in agent alive check.
+	http.HandleFunc("/all/hosts", func(w http.ResponseWriter, r *http.Request) {
+		var hosts []ResponseHost
+		var host ResponseHost
 		cache.HostMap.Lock()
-		for host, _ := range cache.HostMap.M {
-			endpoint.Endpoint = host
-			endpoints = append(endpoints, endpoint)
+		//cache中的map的key就是hostname，也就是endpoint；value是hostid没用
+		for key, _ := range cache.HostMap.M {
+			host.Endpoint = key
+			host.Ip = cache.HostMap.M2[key] //通过hostname找IP
+			hosts = append(hosts, host)
 		}
 		cache.HostMap.Unlock()
 
-		RenderJson(w, endpoints)
+		RenderJson(w, hosts)
 	})
 
 }

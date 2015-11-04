@@ -10,10 +10,11 @@ import (
 // key: hostname value: hostid
 type SafeHostMap struct {
 	sync.RWMutex
-	M map[string]int
+	M  map[string]int
+	M2 map[string]string
 }
 
-var HostMap = &SafeHostMap{M: make(map[string]int)}
+var HostMap = &SafeHostMap{M: make(map[string]int), M2: make(map[string]string)}
 
 func (this *SafeHostMap) GetID(hostname string) (int, bool) {
 	this.RLock()
@@ -23,7 +24,7 @@ func (this *SafeHostMap) GetID(hostname string) (int, bool) {
 }
 
 func (this *SafeHostMap) Init() {
-	m, err := db.QueryHosts()
+	m, m2, err := db.QueryHosts()
 	if err != nil {
 		return
 	}
@@ -31,6 +32,7 @@ func (this *SafeHostMap) Init() {
 	this.Lock()
 	defer this.Unlock()
 	this.M = m
+	this.M2 = m2
 }
 
 type SafeMonitoredHosts struct {

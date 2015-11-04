@@ -7,14 +7,15 @@ import (
 	"time"
 )
 
-func QueryHosts() (map[string]int, error) {
+func QueryHosts() (map[string]int, map[string]string, error) {
 	m := make(map[string]int)
+	m2 := make(map[string]string)
 
-	sql := "select id, hostname from host"
+	sql := "select id, hostname ,ip from host"
 	rows, err := DB.Query(sql)
 	if err != nil {
 		log.Println("ERROR:", err)
-		return m, err
+		return m, m2, err
 	}
 
 	defer rows.Close()
@@ -22,18 +23,20 @@ func QueryHosts() (map[string]int, error) {
 		var (
 			id       int
 			hostname string
+			ip       string
 		)
 
-		err = rows.Scan(&id, &hostname)
+		err = rows.Scan(&id, &hostname, &ip)
 		if err != nil {
 			log.Println("ERROR:", err)
 			continue
 		}
 
 		m[hostname] = id
+		m2[hostname] = ip
 	}
 
-	return m, nil
+	return m, m2, nil
 }
 
 func QueryMonitoredHosts() (map[int]*model.Host, error) {
