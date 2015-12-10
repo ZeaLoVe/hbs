@@ -1,7 +1,7 @@
 package rpc
 
 import (
-	"github.com/open-falcon/hbs/g"
+	"github.com/ZeaLoVe/hbs/g"
 	"log"
 	"net"
 	"net/rpc"

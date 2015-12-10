@@ -2,10 +2,10 @@ package rpc
 
 import (
 	"bytes"
+	"github.com/ZeaLoVe/hbs/cache"
+	"github.com/ZeaLoVe/hbs/g"
 	"github.com/open-falcon/common/model"
 	"github.com/open-falcon/common/utils"
-	"github.com/open-falcon/hbs/cache"
-	"github.com/open-falcon/hbs/g"
 	"sort"
 	"strings"
 	"time"

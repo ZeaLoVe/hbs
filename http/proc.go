@@ -2,9 +2,9 @@ package http
 
 import (
 	"encoding/json"
-	"github.com/open-falcon/hbs/cache"
-	"github.com/open-falcon/hbs/db"
-	"github.com/open-falcon/hbs/g"
+	"github.com/ZeaLoVe/hbs/cache"
+	"github.com/ZeaLoVe/hbs/db"
+	"github.com/ZeaLoVe/hbs/g"
 	"net/http"
 )
 

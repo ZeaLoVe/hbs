@@ -5,8 +5,8 @@ package cache
 // 提供http接口查询机器信息，排查重名机器的时候比较有用
 
 import (
+	"github.com/ZeaLoVe/hbs/db"
 	"github.com/open-falcon/common/model"
-	"github.com/open-falcon/hbs/db"
 	"sync"
 	"time"
 )

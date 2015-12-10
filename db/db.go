@@ -2,8 +2,8 @@ package db
 
 import (
 	"database/sql"
+	"github.com/ZeaLoVe/hbs/g"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/open-falcon/hbs/g"
 	"log"
 )
 

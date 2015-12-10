@@ -2,7 +2,7 @@ package http
 
 import (
 	"fmt"
-	"github.com/open-falcon/hbs/g"
+	"github.com/ZeaLoVe/hbs/g"
 	"net"
 	"strings"
 )

@@ -2,8 +2,8 @@ package db
 
 import (
 	"fmt"
+	"github.com/ZeaLoVe/hbs/g"
 	"github.com/open-falcon/common/model"
-	"github.com/open-falcon/hbs/g"
 	"log"
 )
 

@@ -13,8 +13,9 @@ import (
 // 1.1.0.sdpv001 add api to get endpoint by ip
 // 1.1.0.sdpv002 add function to get endpoint by both public ip and private ip
 // 1.1.0.sdpv003 add function to get hosts information with <ip,endpoint> pair
+// 1.1.0.sdpv004 modify import from open-falcon to ZeaLoVe ,fix run_time of metrics
 const (
-	VERSION = "1.1.0.sdpv003"
+	VERSION = "1.1.0.sdpv004"
 )
 
 func init() {
