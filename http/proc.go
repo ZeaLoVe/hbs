@@ -5,7 +5,9 @@ import (
 	"github.com/ZeaLoVe/hbs/cache"
 	"github.com/ZeaLoVe/hbs/db"
 	"github.com/ZeaLoVe/hbs/g"
+	"github.com/open-falcon/common/model"
 	"net/http"
+	"strings"
 )
 
 func configProcRoutes() {
@@ -71,11 +73,45 @@ func configProcRoutes() {
 		for key, _ := range cache.HostMap.M {
 			host.Endpoint = key
 			host.Ip = cache.HostMap.M2[key] //通过hostname找IP
+			if strings.EqualFold(host.Ip, "0.0.0.0") {
+				continue
+			}
 			hosts = append(hosts, host)
 		}
 		cache.HostMap.Unlock()
-
 		RenderJson(w, hosts)
+	})
+
+	//get ,API of all virtual hosts.ip=0.0.0.0
+	http.HandleFunc("/all/vhosts", func(w http.ResponseWriter, r *http.Request) {
+		var hosts []ResponseHost
+		var host ResponseHost
+		cache.HostMap.Lock()
+		//cache中的map的key就是hostname，也就是endpoint；value是hostid没用
+		for key, _ := range cache.HostMap.M {
+			host.Endpoint = key
+			host.Ip = cache.HostMap.M2[key] //通过hostname找IP
+			if strings.EqualFold(host.Ip, "0.0.0.0") {
+				hosts = append(hosts, host)
+			}
+		}
+		cache.HostMap.Unlock()
+		RenderJson(w, hosts)
+	})
+
+	//API add virtual host:GET
+	http.HandleFunc("/vhost/add", func(w http.ResponseWriter, r *http.Request) {
+		var args model.AgentReportRequest
+		args.Hostname = r.FormValue("name")
+		args.IP = "0.0.0.0"
+		args.AgentVersion = "0.0.0"
+		args.PluginVersion = "0.0.0"
+		if args.Hostname == "" {
+			RenderMsgJson(w, "require host name")
+			return
+		}
+		cache.Agents.Put(&args)
+		RenderMsgJson(w, "add virtual host done.")
 	})
 
 }
