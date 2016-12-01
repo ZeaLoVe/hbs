@@ -2,12 +2,13 @@ package http
 
 import (
 	"encoding/json"
+	"net/http"
+	"strings"
+
 	"github.com/ZeaLoVe/hbs/cache"
 	"github.com/ZeaLoVe/hbs/db"
 	"github.com/ZeaLoVe/hbs/g"
 	"github.com/open-falcon/common/model"
-	"net/http"
-	"strings"
 )
 
 func configProcRoutes() {
@@ -18,6 +19,23 @@ func configProcRoutes() {
 	http.HandleFunc("/plugins/", func(w http.ResponseWriter, r *http.Request) {
 		hostname := r.URL.Path[len("/plugins/"):]
 		RenderDataJson(w, cache.GetPlugins(hostname))
+	})
+
+	//API get host_id by host_name
+	http.HandleFunc("/hosts/id", func(w http.ResponseWriter, r *http.Request) {
+		var host ResponseHostId
+		host.Name = r.FormValue("name")
+		if host.Name == "" {
+			RenderMsgJson(w, "Not param")
+			return
+		}
+		host_id, exist := cache.HostMap.GetID(host.Name)
+		if !exist {
+			RenderMsgJson(w, "name not in cache")
+			return
+		}
+		host.HostId = host_id
+		RenderJson(w, host)
 	})
 
 	//API get endpoint by name
@@ -64,8 +82,14 @@ func configProcRoutes() {
 		RenderJson(w, body)
 	})
 
-	//get ,API of all hosts, use in agent alive check.
+	//老API重定向
 	http.HandleFunc("/all/hosts", func(w http.ResponseWriter, r *http.Request) {
+
+		http.Redirect(w, r, "/host/all", 302)
+	})
+
+	//get ,API of all hosts, use in agent alive check.
+	http.HandleFunc("/host/all", func(w http.ResponseWriter, r *http.Request) {
 		var hosts []ResponseHost
 		var host ResponseHost
 		cache.HostMap.Lock()
@@ -82,8 +106,31 @@ func configProcRoutes() {
 		RenderJson(w, hosts)
 	})
 
+	//API add host:GET
+	http.HandleFunc("/host/add", func(w http.ResponseWriter, r *http.Request) {
+		var args model.AgentReportRequest
+		args.Hostname = r.FormValue("name")
+		args.IP = r.FormValue("ip")
+		args.AgentVersion = r.FormValue("agentversion")
+		args.PluginVersion = r.FormValue("pluginversion")
+		if args.Hostname == "" {
+			RenderMsgJson(w, "require host name")
+			return
+		}
+		if len(args.Hostname) > 255 {
+			RenderMsgJson(w, "host name too long")
+			return
+		}
+		if args.IP == "" {
+			RenderMsgJson(w, "require host ip")
+			return
+		}
+		cache.Agents.Put(&args)
+		RenderMsgJson(w, "add Host done.")
+	})
+
 	//get ,API of all virtual hosts.ip=0.0.0.0
-	http.HandleFunc("/all/vhosts", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/vhost/all", func(w http.ResponseWriter, r *http.Request) {
 		var hosts []ResponseHost
 		var host ResponseHost
 		cache.HostMap.Lock()
@@ -107,11 +154,22 @@ func configProcRoutes() {
 		args.AgentVersion = "0.0.0"
 		args.PluginVersion = "0.0.0"
 		if args.Hostname == "" {
-			RenderMsgJson(w, "require host name")
+			RenderMsgJson(w, "require vhost name")
 			return
 		}
-		cache.Agents.Put(&args)
-		RenderMsgJson(w, "add virtual host done.")
+		if len(args.Hostname) > 255 {
+			RenderMsgJson(w, "vhost name too long")
+			return
+		}
+		cache.HostMap.Lock()
+		_, exist := cache.HostMap.M2[args.Hostname]
+		cache.HostMap.Unlock()
+		if exist {
+			RenderMsgJson(w, "vHost exist.")
+		} else {
+			cache.Agents.Put(&args)
+			RenderMsgJson(w, "add vHost done.")
+		}
 	})
 
 }
@@ -123,6 +181,11 @@ type Endpoint struct {
 type ResponseHost struct {
 	Ip       string `json:"ip,omitempty"`
 	Endpoint string `json:"endpoint,omitempty"`
+}
+
+type ResponseHostId struct {
+	Name   string `json:"name,omitempty"`
+	HostId int    `json:"host_id,omitempty"`
 }
 
 type ResponseEndpoints struct {
