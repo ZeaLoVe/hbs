@@ -97,7 +97,7 @@ func configProcRoutes() {
 		for key, _ := range cache.HostMap.M {
 			host.Endpoint = key
 			host.Ip = cache.HostMap.M2[key] //通过hostname找IP
-			if strings.EqualFold(host.Ip, "0.0.0.0") {
+			if strings.EqualFold(host.Ip, "0.0.0.0") || host.Ip == "" {
 				continue
 			}
 			hosts = append(hosts, host)
@@ -138,7 +138,7 @@ func configProcRoutes() {
 		for key, _ := range cache.HostMap.M {
 			host.Endpoint = key
 			host.Ip = cache.HostMap.M2[key] //通过hostname找IP
-			if strings.EqualFold(host.Ip, "0.0.0.0") {
+			if strings.EqualFold(host.Ip, "0.0.0.0") || host.Ip == "" {
 				hosts = append(hosts, host)
 			}
 		}
